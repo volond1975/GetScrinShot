@@ -8,16 +8,16 @@
  * @return {object} RetriableRequestsBatch.
  */
 function RetriableRequestsBatch(fetchService, requests) {
-  this.fetchService = fetchService;
+    this.fetchService = fetchService;
 
-  requests.forEach(function(r) {
-    // Make sure URLFetchApp doesn't crash on errors
-    r['muteHttpExceptions'] = true;
-  });
+    requests.forEach(function(r) {
+        // Make sure URLFetchApp doesn't crash on errors
+        r['muteHttpExceptions'] = true;
+    });
 
-  this.requests = requests;
+    this.requests = requests;
 
-  return this;
+    return this;
 }
 
 /** @const - Maximum number of times the batch can be called */
@@ -25,7 +25,7 @@ RetriableRequestsBatch.MAX_TRIES = 3;
 
 /** @const - Requests will be retried only in case when response payload matches following string */
 RetriableRequestsBatch.RETRIABLE_ERROR_STRINGS = [
-  'Endpoint request timed out' 
+    'Endpoint request timed out'
 ];
 
 /**
@@ -36,106 +36,106 @@ RetriableRequestsBatch.RETRIABLE_ERROR_STRINGS = [
  *   array of HTTPResponse (in the same order as requests).
  */
 RetriableRequestsBatch.prototype.fetchWithRetries = function fetchWithRetries() {
-  var requestObjects = this._initializeRequestObjects();
+    var requestObjects = this._initializeRequestObjects();
 
-  return this._performRequests(requestObjects);
+    return this._performRequests(requestObjects);
 };
 
 RetriableRequestsBatch.prototype._performRequests = function _performRequests(requestObjects) {
-  var tries = 1;
-  var toCall = requestObjects;
+    var tries = 1;
+    var toCall = requestObjects;
 
-  while (tries <= RetriableRequestsBatch.MAX_TRIES && toCall.length) {
-    if (tries > 1) {
-      console.log('Retrying requests', tries, toCall);
+    while (tries <= RetriableRequestsBatch.MAX_TRIES && toCall.length) {
+        if (tries > 1) {
+            console.log('Retrying requests', tries, toCall);
+        }
+
+        this._fetchAndPopulateResponses(toCall);
+
+        // If a non-retriable errors happens immediately throw an error
+        var failedNonRetriable = requestObjects.filter(this._isFailedNonRetriable.bind(this));
+        var nonRetriableError = this._getError(failedNonRetriable);
+        if (nonRetriableError) {
+            console.error('Non-retriable error happened', nonRetriableError);
+            return { error: nonRetriableError };
+        }
+
+        toCall = requestObjects.filter(this._isFailedRetriable.bind(this));
+
+        tries++;
     }
 
-    this._fetchAndPopulateResponses(toCall);
-
-    // If a non-retriable errors happens immediately throw an error
-    var failedNonRetriable = requestObjects.filter(this._isFailedNonRetriable.bind(this));
-    var nonRetriableError = this._getError(failedNonRetriable);
-    if (nonRetriableError) {
-      console.error('Non-retriable error happened', nonRetriableError);
-      return { error: nonRetriableError };
+    // If retriable errors happens too many times return an error
+    var tooManyRetriesError = this._getError(toCall);
+    if (tooManyRetriesError) {
+        console.error('Retriable error occured too many times', tooManyRetriesError);
+        return { error: tooManyRetriesError };
     }
 
-    toCall = requestObjects.filter(this._isFailedRetriable.bind(this));
-
-    tries++;
-  }
-
-  // If retriable errors happens too many times return an error
-  var tooManyRetriesError = this._getError(toCall);
-  if (tooManyRetriesError) {
-    console.error('Retriable error occured too many times', tooManyRetriesError);
-    return { error: tooManyRetriesError };
-  }
-
-  return { responses: requestObjects.map(function(d) { return d.response; }) };
+    return { responses: requestObjects.map(function(d) { return d.response; }) };
 };
 
 RetriableRequestsBatch.prototype._initializeRequestObjects = function _initializeRequestObjects() {
-  var requestObjects = [];
+    var requestObjects = [];
 
-  for (var i = 0; i < this.requests.length; i++) {
-    requestObjects.push({ index: i, request: this.requests[i], response: null });
-  }
+    for (var i = 0; i < this.requests.length; i++) {
+        requestObjects.push({ index: i, request: this.requests[i], response: null });
+    }
 
-  return requestObjects;
+    return requestObjects;
 };
 
 RetriableRequestsBatch.prototype._fetchAndPopulateResponses = function _fetchAndPopulateResponses(requestObjects) {
-  var requestsToCall = requestObjects.map(function(d) { return d.request; });
-  var responses = this.fetchService.fetchAll(requestsToCall);
-  for (var i = 0; i < responses.length; i++) {
-    requestObjects[i].response = responses[i];
-  }
+    var requestsToCall = requestObjects.map(function(d) { return d.request; });
+    var responses = this.fetchService.fetchAll(requestsToCall);
+    for (var i = 0; i < responses.length; i++) {
+        requestObjects[i].response = responses[i];
+    }
 };
 
 RetriableRequestsBatch.prototype._getError = function _getError(requestObjects) {
-  if (requestObjects.length) {
-    return requestObjects[0].response.getContentText();
-  }
+    if (requestObjects.length) {
+        return requestObjects[0].response.getContentText();
+    }
 };
 
 RetriableRequestsBatch.prototype._isFailedRetriable = function _isFailedRetriable(requestObject) {
-  return this._requestDidFail(requestObject) && this._retriableErrorOccured(requestObject);
+    return this._requestDidFail(requestObject) && this._retriableErrorOccured(requestObject);
 };
 
 RetriableRequestsBatch.prototype._isFailedNonRetriable = function _isFailedNonRetriable(requestObject) {
-  return this._requestDidFail(requestObject) && !this._retriableErrorOccured(requestObject);
+    return this._requestDidFail(requestObject) && !this._retriableErrorOccured(requestObject);
 };
 
 RetriableRequestsBatch.prototype._retriableErrorOccured = function _retriableErrorOccured(requestObject) {
-  var error = requestObject.response.getContentText();
-  return RetriableRequestsBatch.RETRIABLE_ERROR_STRINGS.filter(function(s) {
-    return error.indexOf(s) >= 0;
-  }).length > 0;
+    var error = requestObject.response.getContentText();
+    return RetriableRequestsBatch.RETRIABLE_ERROR_STRINGS.filter(function(s) {
+        return error.indexOf(s) >= 0;
+    }).length > 0;
 };
 
 RetriableRequestsBatch.prototype._requestDidFail = function _requestDidFail(requestObject) {
-  return requestObject.response.getResponseCode() >= 400;
+    return requestObject.response.getResponseCode() >= 400;
 };
 
 
-function test(){
-  
- var request1 = { 
-  
-  'url': 'https://httpbin.org/post',
-  'method' : 'post'
-};
-var request2 = {
-  'url': 'https://httpbin.org/post',
-  'method' : 'post'
-};
-var result = new RetriableRequestsBatch(UrlFetchApp, [request1, request2]).fetchWithRetries();
-if (result.error) {
-  console.error('Ошибка при получении пакета:', result.error);
-  return;
-}
-console.log('Успешно извлеченный пакет запросов. Responses:', result.responses);
- 
-  
+function test() {
+
+    var request1 = {
+
+        'url': 'https://httpbin.org/post',
+        'method': 'post'
+    };
+    var request2 = {
+        'url': 'https://httpbin.org/post',
+        'method': 'post'
+    };
+    var result = new RetriableRequestsBatch(UrlFetchApp, [request1, request2]).fetchWithRetries();
+    if (result.error) {
+        console.error('Ошибка при получении пакета:', result.error);
+        return;
+    }
+    console.log('Успешно извлеченный пакет запросов. Responses:', result.responses);
+
+
 }
