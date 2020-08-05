@@ -153,14 +153,6 @@ const addSizePreviewFormula = (formula, range) => {
     range.setFormula(formula)
 }
 
-const setDataByNameRange = ({ name = "Sizes", range }) => {
-    var range = getNameRangeActiveSpreadsheet({ name: name })
-    var list = getNameRangeActiveSpreadsheet({ name: name }).getValues().flat().filter(el => el != '')
-    var rule = SpreadsheetApp.newDataValidation().requireValueInRange(range).build();
-    range.setDataValidation(rule);
-
-
-}
 
 
 const setAltTitle = (range, altTextTitle) => {
@@ -178,5 +170,14 @@ const setAltTitle = (range, altTextTitle) => {
         console.log(" К ячейке привязано более одного изображения");
         return { error: ' К ячейке привязано более одного изображения', res: res }
     }
+
+}
+
+
+const has=(key)=>{
+ var obj = getImagesSheet()
+ var testAltTextTitle = R.prop(altTextTitle, obj)
+
+
 
 }

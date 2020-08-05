@@ -1,5 +1,7 @@
 function onSelectionChange(e) {
     let cache = CacheService.getDocumentCache();
+    console.log(Session.getEffectiveUser().getEmail())
+    console.log(Session.getActiveUser().getEmail())
     let range = e.range;
     var obj = getImagesSheet()
     var t = Object.keys(obj).filter(el => obj[el].AnchorCellA1Notation === range.getA1Notation())
@@ -17,8 +19,9 @@ function onSelectionChange(e) {
         cache.put("oldImage", t[0]);
         console.log('view' + t)
         var [h, w, x, y] = range.getValue().split("|")
-        obj[t[0]].image.setHeight(h)
-        obj[t[0]].image.setWidth(w)
+       // obj[t[0]].image.setHeight(h)
+       // obj[t[0]].image.setWidth(w)
+     
         console.log('view  x' + obj[t[0]].image.getAnchorCellXOffset())
         obj[t[0]].image.setAnchorCellXOffset(x)
         obj[t[0]].image.setAnchorCellYOffset(y)

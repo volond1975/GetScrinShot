@@ -1,16 +1,44 @@
+function closeWindow({window='index'}={}) {
+ const scrProp=new Props("ScriptProperties");
+  if (scrProp.get(window) == "open") {
+    var html = HtmlService.createHtmlOutput("<script>google.script.host.close();</script>");
+    SpreadsheetApp.getActiveSpreadsheet().show(html);
+    scrProp.set(window, "close");
+  }
+}
+
+
 function onEditPasteGridImage(e) {
+    const scrProp=new Props("ScriptProperties");
     let cache = CacheService.getDocumentCache();
     var range = e.range;
     var sheet = range.getSheet();
     var url = e.range.getValue();
-    console.log(url);
+  
+  var rule=getActiveRangeDataValidation(range)
+  
+  // if(rule==SpreadsheetApp.DataValidationCriteria.CHECKBOX&&range.getValue()){
+   if(isCHECKBOX(rule)&&range.getValue()){
+ //  inputurl();
+   viewByCheckBox()
+   console.log('inputurl()')
+   }
+   else{
+    console.log('closeWindow()')
+    closeWindow()
+   //FIXME:unchek https://stackoverflow.com/questions/59485690/apps-script-how-to-detect-dialog-is-closed
+   };
+  
     var strRegExp = "https:\/\/c2n.me\/(.*)"
     var reg = new RegExp(reg)
-    if (R.test(/https:\/\/c2n.me\/(.*)/, url)) {
+  /*
+  if (R.test(/https:\/\/c2n.me\/(.*)/, url)) {
         var altTextTitle = R.match(/https:\/\/c2n.me\/(.*)/, url)[1]
         var obj = getImagesSheet()
         var testAltTextTitle = R.prop(altTextTitle, obj)
         console.log(testAltTextTitle);
+        
+        
         let objData = [{
             pageLink: e.range.getValue(), //"https://clip2net.com/s/48CqgV3",
             fileName: altTextTitle,
@@ -29,7 +57,7 @@ function onEditPasteGridImage(e) {
         console.log('objData:', objData);
 
 
-
+*/
 
         if (isRegTest(strRegExp, url)) {
             var altTextTitle = R.match(/https:\/\/c2n.me\/(.*)/, url)[1] //FIXME
@@ -38,22 +66,48 @@ function onEditPasteGridImage(e) {
             var testAltTextTitle = R.prop(altTextTitle, obj)
             console.log(R.test(/https:\/\/c2n.me\/(.*)/, url) && (!testAltTextTitle));
             if (!testAltTextTitle) {
+            let objData = [{
+            pageLink: e.range.getValue(), //"https://clip2net.com/s/48CqgV3",
+            fileName: altTextTitle,
+            strRegExp: 'image-down-file" href="http:\/\/clip2net.com\/(.+).nocache',
+            baseURL: "http://clip2net.com",
+            folderId: "1Ewdf8RGsn_MkZzvDryw8fv9p9HJm01mW",
+            urlImage: '',
+            urlImageDrive: '',
+        }, ]
+        const response = UrlFetchApp.fetch(url);
+
+        var getImageLinkByResponse = getImageLink(objData[0]);
+        // var urlImage=getImageLinkByResponse(response)
+        objData[0]["urlImage"] = getImageLinkByResponse(response)
+
+        console.log('objData:', objData);
+            
+            
+            
+            
+            
+            
+            
                 var gridImage = sheet.insertImage(objData[0].urlImage, range.getColumn(), range.getRow(), range.getHeight(), range.getWidth());
-                gridImage.setAnchorCellXOffset(range.getHeight())
-                gridImage.setAnchorCellYOffset(range.getWidth())
+                gridImage.setAnchorCellXOffset(100)
+                gridImage.setAnchorCellYOffset(20)
+                const InherentHeight = gridImage.getInherentHeight();
+                const InherentWidth = gridImage.getInherentWidth();
 
 
 
-
-                var e = setAltTitle(range, altTextTitle)
-                var w = setDataByNameRange({ range: range })
-                addSizePreviewFormula('=smile', range)
+                var z = setAltTitle(range, altTextTitle)
+                addCheckbox()//setDataByNameRange({ range: range })
+              //  addSizePreviewFormula('=smile', range)
+                range.setValue(false)
                 cache.put("oldImage", altTextTitle);
                 objData[0]["urlImageDrive"] = getAndSetDrive(objData[0])
-                range.setNote(JSON.stringify({ url: url, urlImageDrive: objData.urlImageDrive, urlImage: objData.urlImage, }))
-                    //  return res
+                range.setNote(JSON.stringify({ url: url, urlImageDrive: objData[0].urlImageDrive, urlImage: objData[0].urlImage,InherentHeight:InherentHeight,InherentWidth:InherentWidth }))
+                var window='index'
+                scrProp.set(window, "close");
             } else {
-                SpreadsheetApp.getActiveSpreadsheet().toast("Уже есть")
+                SpreadsheetApp.getActiveSpreadsheet().toast("Картинка с таким id Уже есть!",10)
                 console.log("Уже есть");
             }
         }
@@ -75,8 +129,12 @@ function onEditPasteGridImage(e) {
 
 
 
-
-    }
+  //  }
+  if(R.test(/.*\|.*/, url)){
+   inputurl()
+ }
+   
+    
 }
 //
 

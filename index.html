@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      input.in1 {
+        width: 90%;
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <input type="text" name="url" class="in1">
+      <input type="button" value="Run" class="in2"
+        onclick="
+        google.script.run
+        .withSuccessHandler(google.script.host.close)
+        .launchbrowser(this.parentNode)
+      ">
+    </form>
+  </body>
+</html>
+

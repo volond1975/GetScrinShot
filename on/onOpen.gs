@@ -7,6 +7,12 @@ const ListOfMenu = {
         ['🎉Предпросмотр', 'previewAll'],
         ['🔥Создать Лист Меню', 'getActiveCellImage'],
         ['🔥ActiveCellImage', 'getActiveCellImageNames'],
+        ['Открыть с диска', 'inputurl'],
+        ['addCheckboxActiveCell', 'addCheckboxActiveCell'],
+        ['isIdByValue', 'isIdByValue'],
+        ['setKeyFromNoteJson', 'setKeyFromNoteJson'],
+      //  setKeyFromNoteJson
+        
     ],
 
 }
