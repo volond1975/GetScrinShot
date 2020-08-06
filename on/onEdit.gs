@@ -80,21 +80,54 @@ function onEditPasteGridImage(e) {
         var getImageLinkByResponse = getImageLink(objData[0]);
         // var urlImage=getImageLinkByResponse(response)
         objData[0]["urlImage"] = getImageLinkByResponse(response)
+        objData[0]["urlImageDrive"] = getAndSetDrive(objData[0])
+        
+        var id=getIdFromUrl( objData[0]["urlImageDrive"])
+        var resize=getWidth({name:'insertImageToSheetSize'})
+        if(!resize){
+        var [h,w,x,y]= resize.split("|")
+        var resizeObj=resizeFileById(w,id)
+        var source= R.view(lensBlob,resizeObj)
+        var gridImage = sheet.insertImage(source, range.getColumn(), range.getRow(), h, w);
+         const noteObj={
+ id: altTextTitle,
+ urlImageDrive: objData[0].urlImageDrive,
+  }
+ }      
+else{
+ var source=objData[0].urlImage
+ var gridImage = sheet.insertImage(source, range.getColumn(), range.getRow(), h, w);
+ const InherentHeight = gridImage.getInherentHeight();
+ const InherentWidth = gridImage.getInherentWidth();
+ const noteObj={
+ url: url,
+ urlImageDrive: objData[0].urlImageDrive,
+ urlImage: objData[0].urlImage,
+ InherentHeight:InherentHeight,
+ InherentWidth:InherentWidth
+ }
 
+ 
+  gridImage.setAnchorCellXOffset(x)
+              gridImage.setAnchorCellYOffset(y)
+ }
+ 
+  
         console.log('objData:', objData);
             
+     range.setNote(JSON.stringify(noteObj))
+        
             
             
             
-            
-            
-            
-                var gridImage = sheet.insertImage(objData[0].urlImage, range.getColumn(), range.getRow(), range.getHeight(), range.getWidth());
-                gridImage.setAnchorCellXOffset(100)
-                gridImage.setAnchorCellYOffset(20)
-                const InherentHeight = gridImage.getInherentHeight();
-                const InherentWidth = gridImage.getInherentWidth();
-
+                //insertImageToSheet
+               
+               // var gridImage = sheet.insertImage(objData[0].urlImage, range.getColumn(), range.getRow(), range.getHeight(), range.getWidth());
+           //   var gridImage = sheet.insertImage(objData[0].urlImage, range.getColumn(), range.getRow(), h, w);
+              
+             
+              
+               
 
 
                 var z = setAltTitle(range, altTextTitle)
@@ -102,13 +135,18 @@ function onEditPasteGridImage(e) {
               //  addSizePreviewFormula('=smile', range)
                 range.setValue(false)
                 cache.put("oldImage", altTextTitle);
-                objData[0]["urlImageDrive"] = getAndSetDrive(objData[0])
-                range.setNote(JSON.stringify({ url: url, urlImageDrive: objData[0].urlImageDrive, urlImage: objData[0].urlImage,InherentHeight:InherentHeight,InherentWidth:InherentWidth }))
+                
+                
+                
+               
                 var window='index'
-                scrProp.set(window, "close");
+                viewByCheckBox({range:range})
+                //scrProp.set(window, "close");
             } else {
-                SpreadsheetApp.getActiveSpreadsheet().toast("Картинка с таким id Уже есть!",10)
+               toast("Картинка с таким id Уже есть!",10)
                 console.log("Уже есть");
+                range.setNote("Уже есть")
+                previewByName(altTextTitle)
             }
         }
 

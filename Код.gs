@@ -1,3 +1,6 @@
+//lib RAMDA -1pkUU_vx-O8YwQrvq4knLMzPBqXNO8-CdWNgYMihhbfrGleJj9Eg1zr30
+var R = RAMDA.R;
+const P = ParametrsV6.P
 const f = () => {
     var siteUrl = "https://blog.banghasan.com/note/tutorial/bot/telegram/google%20script/GAS-Library-Cheerio/";
     var url = "https://www.googleapis.com/pagespeedonline/v4/runPagespeed?screenshot=true&fields=screenshot&url=" + encodeURIComponent(siteUrl);
@@ -83,7 +86,14 @@ function previewAll() {
     ts.forEach(preview)
 
 }
+function previewByName(name) {
+    var obj = getImagesSheet()
+    var imageNames = Object.keys(obj)
+    var ts = imageNames.filter(el => obj[el].AltTextTitle==name).map(el => obj[el].image)
+    console.log(ts)
+    ts.forEach(preview)
 
+}
 function getAllAltImageNames() {
     var objImages = getImagesSheet()
     var arrNames = Object.keys(objImages).map(el => [el])

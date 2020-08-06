@@ -1,6 +1,4 @@
-//lib RAMDA -1pkUU_vx-O8YwQrvq4knLMzPBqXNO8-CdWNgYMihhbfrGleJj9Eg1zr30
-const R = RAMDA.R;
-const P = ParametrsV6.P
+var R = RAMDA.R;
 const isImageHiden = R.curry((obj, el) => obj[el].Height == 2);
 const isImageVisible = R.curry((obj, el) => obj[el].Height != 2);
 

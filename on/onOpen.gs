@@ -1,5 +1,6 @@
+var R = RAMDA.R;
 const ListOfMenu = {
-    title: 'Меню',
+    title: 'c2n.me',
     items: [
         ['name', 'functionName'],
         ["🥑Показать все", "viewAll"],
@@ -11,7 +12,8 @@ const ListOfMenu = {
         ['addCheckboxActiveCell', 'addCheckboxActiveCell'],
         ['isIdByValue', 'isIdByValue'],
         ['setKeyFromNoteJson', 'setKeyFromNoteJson'],
-      //  setKeyFromNoteJson
+        ['altTextTitle', 'altTextTitle'],
+      //  altTextTitle
         
     ],
 

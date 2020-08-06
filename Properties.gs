@@ -1,3 +1,4 @@
+var R = RAMDA.R;
 /**
    * Класс для управления Properties
    * DocumentProperties or ScriptProperties or UserProperties

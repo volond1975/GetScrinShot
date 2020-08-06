@@ -4,3 +4,12 @@ function convImageUrl(url){
   var b64Url='data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
   return b64Url;
 }
+
+ const testFind1=()=>{
+ var arr=aSheet().getDataRange().getValues()
+
+ var fn=(a)=>a==!''
+ //console.log(arr.findIndex(fn))
+ console.log(arr[0].lastIndexOf(undefined))
+ }
+ 

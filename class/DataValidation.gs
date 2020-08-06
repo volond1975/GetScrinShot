@@ -1,3 +1,4 @@
+
 const addCheckbox=({range=SpreadsheetApp.getActiveSpreadsheet().getActiveCell()}={})=> {
   var criteria = SpreadsheetApp.DataValidationCriteria.CHECKBOX;
   var rule = SpreadsheetApp.newDataValidation()
@@ -17,8 +18,12 @@ var lensUrlImageDrive=R.lensProp(key);
 var Url=R.view(lensUrlImageDrive,obj)
 return Url
 })
- 
+ const b=()=>logJson(getUrlFromNoteJson('url',aCell()))
 const getUrlDriveFromNoteJson=getUrlFromNoteJson('urlImageDrive')
+const aCell = () => SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getActiveCell()
+const aSheet = () => SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()//.getName()
+const getNameDriveFromNoteJson = (range) => R.match(/https:\/\/c2n.me\/(.*)/, getUrlFromNoteJson('url', range))[1]
+var altTextTitle = () => getNameDriveFromNoteJson({ range = aCell() } = {}) //FIXME
 
 const isIdByValue=({url=SpreadsheetApp.getActiveSpreadsheet().getActiveCell().getValue()}={})=>{
 
@@ -60,6 +65,8 @@ var url=getUrlFromNoteJson('urlImageDrive',range)
 if (!url){toast("Нет urlImageDrive") ;return}
 
 var id=getIdFromUrl(url)
+var chunky = ChunkyCache(CacheService.getDocumentCache(), 1024 * 90);
+
 if (!id){toast("Нет id") ;return}
 var lensBlob=R.lensProp('blob');
 
@@ -68,7 +75,12 @@ var rName={ name:'sizeHTML' }
 var resizeFileById=R.curry((width,id)=>ImgApp.doResize(id,width))
 const getWidth=({name})=>getNameRangeActiveSpreadsheet({ name:name }).getValue()
 var  resizeObj=resizeFileById(getWidth(rName),id)
+var check = chunky.get(id);
+//toast(check)
+if(!check){
+ toast("Записываю в кеш!",10)
 var b64URL=blobToBase64URL(R.view(lensBlob,resizeObj))
+
 var imgTag=`<img src="${b64URL}" style="min-width:${resizeObj.resizedwidth-10}px;min-height:${resizeObj.resizedheight-10}px"/>`
 var html=`<!DOCTYPE html>
 <html>
@@ -82,6 +94,11 @@ var html=`<!DOCTYPE html>
     </div>
    </body>
 </html>`
+ chunky.put(id, html, 120);
+ }
+ else{
+ var html=check
+ }
 var modalDialog = HtmlService.createHtmlOutput(html)
     .setWidth(resizeObj.resizedwidth+10)
     .setHeight(resizeObj.resizedheight+30)
