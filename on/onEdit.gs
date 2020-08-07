@@ -124,7 +124,7 @@ else{
         console.log('objData:', objData);
       var z = setAltTitle(range, imagePrefiks+altTextTitle)
       addCheckbox()//setDataByNameRange({ range: range }) 
-     range.setValue(false)           
+     range.setValue(true)           
      range.setNote(JSON.stringify(noteObj))
         
             
