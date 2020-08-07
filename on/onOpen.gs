@@ -12,7 +12,7 @@ const ListOfMenu = {
         ['addCheckboxActiveCell', 'addCheckboxActiveCell'],
         ['isIdByValue', 'isIdByValue'],
         ['setKeyFromNoteJson', 'setKeyFromNoteJson'],
-        ['altTextTitle', 'altTextTitle'],
+        ['altTextTitle', 'tf'],
       //  altTextTitle
         
     ],

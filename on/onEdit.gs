@@ -60,10 +60,16 @@ function onEditPasteGridImage(e) {
 */
 
         if (isRegTest(strRegExp, url)) {
+            const getWidth=({name})=>getNameRangeActiveSpreadsheet({ name:name }).getValue()
+            var lensBlob=R.lensProp('blob');
+            var resizeFileById=R.curry((width,id)=>ImgApp.doResize(id,width))
+            var imagePrefiks='ScrIns_'
             var altTextTitle = R.match(/https:\/\/c2n.me\/(.*)/, url)[1] //FIXME
-            SpreadsheetApp.getActiveSpreadsheet().toast(altTextTitle)
-            var obj = getImagesSheet()
-            var testAltTextTitle = R.prop(altTextTitle, obj)
+            SpreadsheetApp.getActiveSpreadsheet().toast(` Ищем изображение по имени:${altTextTitle+altTextTitle}`)
+            var obj = imagesObjFiltered//getImagesSheet().filter(filterScriptImage)
+            
+            var noteObj={}
+            var testAltTextTitle = R.prop(imagePrefiks+altTextTitle, obj)
             console.log(R.test(/https:\/\/c2n.me\/(.*)/, url) && (!testAltTextTitle));
             if (!testAltTextTitle) {
             let objData = [{
@@ -84,22 +90,24 @@ function onEditPasteGridImage(e) {
         
         var id=getIdFromUrl( objData[0]["urlImageDrive"])
         var resize=getWidth({name:'insertImageToSheetSize'})
-        if(!resize){
+        if(resize){
         var [h,w,x,y]= resize.split("|")
         var resizeObj=resizeFileById(w,id)
         var source= R.view(lensBlob,resizeObj)
         var gridImage = sheet.insertImage(source, range.getColumn(), range.getRow(), h, w);
-         const noteObj={
- id: altTextTitle,
+        noteObj={
+ id: 'ScrIns_'+altTextTitle,
  urlImageDrive: objData[0].urlImageDrive,
   }
+  logJson('noteObj',noteObj)
+
  }      
 else{
  var source=objData[0].urlImage
- var gridImage = sheet.insertImage(source, range.getColumn(), range.getRow(), h, w);
+ var gridImage = sheet.insertImage(source, range.getColumn(), range.getRow(),range.getWidth(), range.getHeight());
  const InherentHeight = gridImage.getInherentHeight();
  const InherentWidth = gridImage.getInherentWidth();
- const noteObj={
+ noteObj={
  url: url,
  urlImageDrive: objData[0].urlImageDrive,
  urlImage: objData[0].urlImage,
@@ -108,13 +116,15 @@ else{
  }
 
  
-  gridImage.setAnchorCellXOffset(x)
-              gridImage.setAnchorCellYOffset(y)
+ // gridImage.setAnchorCellXOffset(x)
+   //           gridImage.setAnchorCellYOffset(y)
  }
  
   
         console.log('objData:', objData);
-            
+      var z = setAltTitle(range, imagePrefiks+altTextTitle)
+      addCheckbox()//setDataByNameRange({ range: range }) 
+     range.setValue(false)           
      range.setNote(JSON.stringify(noteObj))
         
             
@@ -130,11 +140,11 @@ else{
                
 
 
-                var z = setAltTitle(range, altTextTitle)
-                addCheckbox()//setDataByNameRange({ range: range })
+             //   var z = setAltTitle(range, 'ScrIns_'+altTextTitle)
+             //   addCheckbox()//setDataByNameRange({ range: range })
               //  addSizePreviewFormula('=smile', range)
-                range.setValue(false)
-                cache.put("oldImage", altTextTitle);
+                
+                cache.put("oldImage",imagePrefiks+altTextTitle);
                 
                 
                 
@@ -143,10 +153,10 @@ else{
                 viewByCheckBox({range:range})
                 //scrProp.set(window, "close");
             } else {
-               toast("Картинка с таким id Уже есть!",10)
+               toast("Картинка с таким Именем Уже есть!","Внимание!!!",10)
                 console.log("Уже есть");
-                range.setNote("Уже есть")
-                previewByName(altTextTitle)
+              //  range.setNote("Уже есть")
+                previewByName(imagePrefiks+altTextTitle)
             }
         }
 
