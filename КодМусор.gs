@@ -26,14 +26,7 @@ function hideAll1() {
         image.setWidth(2)
     })
 }
-function previewByName(name) {
-   // var obj = getImagesSheet().filter(filterScriptImage)
-   // var imageNames = Object.keys(obj)
-   // var ts = imageNames.filter(el => obj[el].AltTextTitle==name).map(el => obj[el].image)
-    console.log(ts)
-    ts.forEach(preview)
 
-}
 function getAllAltImageNames() {
     var objImages = getImagesSheet().filter(filterScriptImage)
     var arrNames = Object.keys(objImages).map(el => [el])

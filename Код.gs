@@ -76,3 +76,12 @@ function previewAll() {
     ts.forEach(preview)
 
 }
+function previewByName(name) {
+  var obj = getImagesSheet()
+  var imageNames = Object.keys(obj)
+  // var ts = imagesFiltered()
+  var ts = imageNames.filter(el => obj[el].AltTextTitle==name).map(el => obj[el].image)
+    console.log(ts)
+    ts.forEach(preview)
+
+}

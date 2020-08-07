@@ -69,7 +69,7 @@ function onEditPasteGridImage(e) {
             var obj = imagesObjFiltered//getImagesSheet().filter(filterScriptImage)
             
             var noteObj={}
-            var testAltTextTitle = R.prop(imagePrefiks+altTextTitle, obj)
+            var testAltTextTitle = R.prop(imagePrefiks+altTextTitle, getImagesSheet())
             console.log(R.test(/https:\/\/c2n.me\/(.*)/, url) && (!testAltTextTitle));
             if (!testAltTextTitle) {
             let objData = [{

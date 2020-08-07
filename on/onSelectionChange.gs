@@ -1,4 +1,5 @@
-function onSelectionChange(e) {
+/*
+function onSelectionChange1(e) {
     let cache = CacheService.getDocumentCache();
     console.log(Session.getEffectiveUser().getEmail())
     console.log(Session.getActiveUser().getEmail())
@@ -36,18 +37,7 @@ function onSelectionChange(e) {
                 //obj[oldRow].image.setWidth(2)
         }
     }
-    /*
-    let oldRow = cache.get("oldRow");
-    if ( oldRow > 0 ) {
-      e.source.getRange(oldRow+":"+oldRow).setBackground("#fff");
-    }
   
-    if ( range.getNumRows() === 1 ) {
-      let row = range.getRow();
-      
-      e.source.getRange(row+":"+row).setBackground("#f3f3f3");
-      
-      cache.put("oldRow", row);
-    } 
-    */
+    
 }
+*/
